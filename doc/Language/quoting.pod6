@@ -310,7 +310,7 @@ Note that variable interpolation happens before word splitting:
     my @list = qqw{$a c};
     .say for @list; # OUTPUT: «a␤b␤c␤»
 
-=head2 X<<<Word quoting with interpolation and quote protection: qqww|quote,qqww;quote,<< >>;quote,« »>>>
+=head2 X<<<Word quoting with interpolation and quote protection: qqww|quote,qqww;>>>
 
 The C<qqw> form of word quoting will treat quote characters literally, leaving them in the
 resulting words:
@@ -322,11 +322,6 @@ you need to use the C<qqww> variant:
 
     my $a = 42; say qqww{"$a b" c}.perl; # OUTPUT: «("42 b", "c")␤»
 
-or equivalently:
-
-    my $a = 42; say <<"$a b" c>>.perl;   # OUTPUT: «("42 b", "c")␤»
-    my $a = 42; say «"$a b" c».perl;     # OUTPUT: «("42 b", "c")␤»
-
 Quote protection happens before interpolation, and interpolation happens before word splitting,
 so quotes coming from inside interpolated variables are just literal quote characters:
 
@@ -334,6 +329,31 @@ so quotes coming from inside interpolated variables are just literal quote chara
     say qqww{"$a" $a}.perl; # OUTPUT: «("1 2", "1", "2")␤»
     my $b = "1 \"2 3\"";
     say qqww{"$b" $b}.perl; # OUTPUT: «("1 \"2 3\"", "1", "\"2", "3\"")␤»
+
+=head2 X<<<Word quoting with interpolation and quote protection: « »|quote,<< >>;quote,« »>>>
+
+=for code :allow<B L>
+say B«<»a b cB«>» L<eqv> ('a', 'b', 'c');   # OUTPUT: «True␤»
+say B«<»a b 42B«>» L<eqv> ('a', 'b', '42'); # OUTPUT: «False␤», the 42 become an IntStr allomorph
+say < 42 > ~~ Int; # OUTPUT: «True␤»
+say < 42 > ~~ Str; # OUTPUT: «True␤»
+
+The double angle brackets quoting is like C<qqww>, but with extra feature that lets you
+construct L<allomorphs|/language/glossary#index-entry-Allomorph> or literals
+of certain numbers:
+
+can construct L<allomorphs|/language/glossary#index-entry-Allomorph> from certain numeric strings.
+
+    say <42 4/2 1e6 1+1i abc>.perl;
+    # OUTPUT: «(IntStr.new(42, "42"), RatStr.new(2.0, "4/2"), NumStr.new(1000000e0, "1e6"), ComplexStr.new(<1+1i>, "1+1i"), "abc")␤»
+
+To construct a L«C<Rat>|/type/Rat» or L«C<Complex>|/type/Complex» literal, use angle
+brackets around the number, without any extra spaces:
+
+    say <42/10>.^name;   # OUTPUT: «Rat␤»
+    say <1+42i>.^name;   # OUTPUT: «Complex␤»
+    say < 42/10 >.^name; # OUTPUT: «RatStr␤»
+    say < 1+42i >.^name; # OUTPUT: «ComplexStr␤»
 
 =head2 X<Shell quoting: qx|quote,qx>
 
