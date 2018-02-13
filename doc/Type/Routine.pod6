@@ -94,9 +94,9 @@ methods, the first element of the Capture needs to be the invocant:
 
 Wraps (i.e. in-place modifies) the routine. That means a call to this routine
 first calls C<&wrapper>, which then can (but doesn't have to) call the
-original routine with the C<callsame>, C<callwith>, C<nextsame> and
-C<nextwith> dispatchers. The return value from the routine is also
-the return value from the wrapper.
+original routine with the L<callsame, callwith, nextsame and
+nextwith|language/functions#Re-dispatching> dispatchers. The return value
+from the routine is also the return value from the wrapper.
 
 C<wrap> returns an instance of a private class called L<WrapHandle|/type/WrapHandle>,
 which you can pass to L<unwrap> to restore the original routine.
